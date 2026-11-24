@@ -17,7 +17,9 @@ player.fill(0x3498db);
 app.stage.addChild(player);
 player.position.set(app.screen.width / 2 - 16, app.screen.height / 2 - 16);
 
-let playerSpeedVector = 150;
+//Movement
+const playerSpeed = 150;
+let playerSpeedVector = playerSpeed;
 
 type DirectionKey = "rightKey" | "leftKey" | "upKey" | "downKey";
 
@@ -32,18 +34,22 @@ const arrowKeyMap: Record<string, DirectionKey> = {
     ArrowRight: "rightKey",
     ArrowLeft: "leftKey",
     ArrowUp: "upKey",
-    ArrowDown: "downKey"
+    ArrowDown: "downKey",
+    KeyD: "rightKey",
+    KeyA: "leftKey",
+    KeyW: "upKey",
+    KeyS: "downKey"
 };
 
 window.addEventListener("keydown", (event) => {
-    const directionKey = arrowKeyMap[event.key];
+    const directionKey = arrowKeyMap[event.code];
     if (directionKey) {
         keyState[directionKey] = true;
     }
 });
 
 window.addEventListener("keyup", (event) => {
-    const directionKey = arrowKeyMap[event.key];
+    const directionKey = arrowKeyMap[event.code];
     if (directionKey) {
         keyState[directionKey] = false;
     }
@@ -51,16 +57,33 @@ window.addEventListener("keyup", (event) => {
 
 app.ticker.add((ticker) => {
     const dt = ticker.deltaMS / 1000;
+    let moveX = 0;
+    let moveY = 0;
     if (keyState.rightKey) {
-        player.x += playerSpeedVector * dt;
+        // player.x += playerSpeedVector * dt;
+        moveX += 1;
     }
     if (keyState.leftKey) {
-        player.x -= playerSpeedVector * dt;
+       // player.x -= playerSpeedVector * dt;
+        moveX -= 1;
     }
     if (keyState.downKey) {
-        player.y += playerSpeedVector * dt;
+        //player.y += playerSpeedVector * dt;
+        moveY += 1;
     }
     if (keyState.upKey) {
-        player.y -= playerSpeedVector * dt;
+        //player.y -= playerSpeedVector * dt;
+        moveY -= 1;
     }
+    
+    if (moveX !== 0 && moveY !== 0) 
+    {
+        playerSpeedVector /= Math.sqrt(2);
+    }
+    player.x += moveX * playerSpeedVector * dt;
+    player.y += moveY * playerSpeedVector * dt;
+
+    moveX = 0;
+    moveY = 0;
+    playerSpeedVector = playerSpeed;
 });
